@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interfaz de API con XML</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .icon {
+      cursor: pointer;
+      margin-right: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Interfaz de API con XML</h1>
+
+  <!-- Formulario para agregar/editar usuarios -->
+  <form id="userForm">
+    <label for="name">Nombre:</label>
+    <input type="text" id="name" name="name" required>
+    <label for="email"> Correo electrónico:</label>
+    <input type="email" id="email" name="email" required><br><br>
+    <button type="button" id="submitButton" onclick="addOrUpdateUser()">Agregar Usuario</button>
+  </form>
+
+  <!-- Tabla para mostrar usuarios -->
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Correo electrónico</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    function addUser() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+
+      const xmlData = `<user><name>${name}</name><email>${email}</email></user>`;
+
+      fetch('http://localhost:3001/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/xml',
+        },
+        body: xmlData,
+      })
+        .then(response => response.text())
+        .then(data => {
+          alert(data);
+          getUserList();
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function getUserList() {
+      fetch('http://localhost:3001/usuarios', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/xml',
+        },
+      })
+        .then(response => response.text())
+        .then(data => displayUserList(data))
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayUserList(xmlData) {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlData, 'application/xml');
+
+      const users = xmlDoc.querySelectorAll('usuarios > *');
+      const tableBody = document.querySelector('#userTable tbody');
+      tableBody.innerHTML = '';
+
+      for (let i = 0; i < users.length; i += 3) {
+        const userId = users[i].textContent;
+        const userName = users[i + 1].textContent;
+        const userEmail = users[i + 2].textContent;
+
+        const row = `<tr>
+          <td>${userId}</td>
+          <td>${userName}</td>
+          <td>${userEmail}</td>
+          <td>
+            <i class="fas fa-edit icon" onclick="editUser('${userId}', '${userName}', '${userEmail}')"></i>
+            <i class="fas fa-trash-alt icon" onclick="confirmDelete('${userId}', '${userName}', '${userEmail}')"></i>
+          </td>
+        </tr>`;
+
+        tableBody.innerHTML += row;
+      }
+    }
+
+    function deleteUser(userId) {
+      const xmlData = `<user><id>${userId}</id></user>`;
+
+      fetch(`http://localhost:3001/usuarios`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/xml',
+        },
+        body: xmlData,
+      })
+        .then(response => response.text())
+        .then(data => {
+          alert(data);
+          getUserList();
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function editUser(userId, userName, userEmail) {
+      document.getElementById('name').value = userName;
+      document.getElementById('email').value = userEmail;
+      document.getElementById('submitButton').textContent = 'Actualizar Usuario';
+      document.getElementById('submitButton').onclick = function () {
+        updateUser(userId);
+      };
+    }
+
+    function addOrUpdateUser() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+
+      const xmlData = `<user><name>${name}</name><email>${email}</email></user>`;
+      const submitButton = document.getElementById('submitButton');
+
+      if (submitButton.textContent === 'Agregar Usuario') {
+        fetch('http://localhost:3001/usuarios', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/xml',
+          },
+          body: xmlData,
+        })
+          .then(response => response.text())
+          .then(data => {
+            alert(data);
+            getUserList();
+          })
+          .catch(error => console.error('Error:', error));
+      } else {
+        const userId = submitButton.dataset.userId;
+        xmlData.firstChild.innerHTML = `<id>${userId}</id>`;
+        fetch(`http://localhost:3001/usuarios/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/xml',
+          },
+          body: xmlData,
+        })
+          .then(response => response.text())
+          .then(data => {
+            alert(data);
+            getUserList();
+          })
+          .catch(error => console.error('Error:', error));
+
+        submitButton.textContent = 'Agregar Usuario';
+        submitButton.onclick = addOrUpdateUser;
+        delete submitButton.dataset.userId;
+      }
+
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+    }
+
+    function updateUser(userId) {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+
+      const xmlData = `<user><name>${name}</name><email>${email}</email></user>`;
+
+      fetch(`http://localhost:3001/usuarios/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/xml',
+        },
+        body: xmlData,
+      })
+        .then(response => response.text())
+        .then(data => {
+          alert(data);
+          getUserList();
+        })
+        .catch(error => console.error('Error:', error));
+
+      document.getElementById('submitButton').textContent = 'Agregar Usuario';
+      document.getElementById('submitButton').onclick = addOrUpdateUser;
+
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+    }
+
+    function confirmDelete(userId, userName, userEmail) {
+      const confirmMessage = `¿Está seguro de que desea eliminar al usuario:\nID: ${userId}\nNombre: ${userName}\nCorreo electrónico: ${userEmail}?`;
+
+      if (confirm(confirmMessage)) {
+        deleteUser(userId);
+      }
+    }
+
+    getUserList();
+  </script>
+
+</body>
+
+</html>
