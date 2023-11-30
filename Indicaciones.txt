@@ -1,0 +1,13 @@
+## Indicaciones para correr las API ##
+
+-Ejecutar los script en los distintos gestores 
+de bases de datos segun corresponda
+
+-Instalar Node.js: https://nodejs.org/en
+
+-Abrir las carpetas de cada API con Visual Studio Code
+
+-Abrir una terminal dentro de VSCode
+
+-Ejecutar el comando para cada API segun el nombre del archivos .js
+(puede ser: node server.js o node index.js)

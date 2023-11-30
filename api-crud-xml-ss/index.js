@@ -88,9 +88,9 @@ app.put('/api/cursos/:id', async (req, res) => {
   try {
     await mssql.query`
       UPDATE Cursos
-      SET DetallesCurso.modify('replace value of (Curso/Nombre/text())[1] with ${nombre}'),
-          DetallesCurso.modify('replace value of (Curso/Categoria/text())[1] with ${categoria}'),
-          DetallesCurso.modify('replace value of (Curso/Maestro/text())[1] with ${maestro}')
+      SET DetallesCurso.modify('replace value of (Nombre/text())[1] with ${nombre}'),
+          DetallesCurso.modify('replace value of (Categoria/text())[1] with ${categoria}'),
+          DetallesCurso.modify('replace value of (Maestro/text())[1] with ${maestro}')
       WHERE CursoID = ${id};
     `;
 
@@ -163,8 +163,8 @@ app.put('/api/estudiantes/:id', async (req, res) => {
   try {
     await mssql.query`
       UPDATE Estudiantes
-      SET DatosEstudiante.modify('replace value of (Estudiante/Nombre/text())[1] with ${nombre}'),
-          DatosEstudiante.modify('replace value of (Estudiante/Apellido/text())[1] with ${apellido}'),
+      SET DatosEstudiante.modify('replace value of (Nombre/text())[1] with ${nombre}'),
+          DatosEstudiante.modify('replace value of (Apellido/text())[1] with ${apellido}'),
           CursoID = ${cursoId}
       WHERE EstudianteID = ${id};
     `;
