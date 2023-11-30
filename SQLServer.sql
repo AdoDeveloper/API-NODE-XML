@@ -78,13 +78,17 @@ WHERE
 
 -- Actualizar datos de Cursos
 UPDATE Cursos
-SET DetallesCurso.modify('replace value of (Curso/Maestro/text())[1] with "Nuevo Maestro"')
+SET DetallesCurso.modify('replace value of (Maestro/text())[1] with "Nuevo Maestro"')
 WHERE CursoID = 1;
+
+select * from Cursos;
 
 -- Actualizar datos de Estudiantes
 UPDATE Estudiantes
-SET DatosEstudiante.modify('replace value of (Estudiante/Apellido/text())[1] with "Nuevo Apellido"')
+SET DatosEstudiante.modify('replace value of (Apellido/text())[1] with "Nuevo Apellido"')
 WHERE EstudianteID = 1;
+
+select * from Estudiantes;
 
 -- Leer datos de Cursos después de la actualización
 SELECT CursoID, DetallesCurso AS DetallesCursoXML
