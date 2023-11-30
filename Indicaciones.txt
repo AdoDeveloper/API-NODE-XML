@@ -11,3 +11,44 @@ de bases de datos segun corresponda
 
 -Ejecutar el comando para cada API segun el nombre del archivos .js
 (puede ser: node server.js o node index.js)
+
+## Como se crea API con Node.js para XML ##
+
+-Instalar Node.js: https://nodejs.org/en
+
+-Abrir una carpeta con Visual Studio Code
+
+-Abrir una terminal dentro de VSCode
+
+-Ejecutar:
+
+ npm init -y
+
+SQL Server Dependencias:
+
+ npm install express body-parser body-parser-xml mssql xml2js xmldom
+
+-Crear el archivo index.js donde creará la logica para el manejo de los metodos
+
+$Dependencias específicas:
+
+express: Un framework web para Node.js que facilita la creación de API y aplicaciones web.
+body-parser: Middleware de Node.js que analiza los cuerpos de las solicitudes HTTP y los convierte en objetos JavaScript.
+body-parser-xml: Un middleware de body-parser que permite analizar y procesar datos XML en las solicitudes.
+mssql: Cliente de SQL Server para Node.js, que permite la conexión y la ejecución de consultas en bases de datos SQL Server.
+xml2js: Una biblioteca que convierte datos XML en objetos JavaScript.
+xmldom: Una implementación basada en DOM para trabajar con documentos XML en Node.js.
+
+MySQL Dependencias:
+
+ npm install express mysql body-parser xml2js cors
+
+-Crear el archivo index.js donde creará la logica para el manejo de los metodos
+
+$Dependencias específicas:
+
+express: Framework web para Node.js.
+body-parser: Middleware de Node.js para analizar los cuerpos de las solicitudes HTTP.
+xml2js: Convierte datos XML en objetos JavaScript.
+mysql: Cliente MySQL para Node.js, que permite la conexión y la ejecución de consultas en bases de datos MySQL.
+cors: Middleware que permite a los servidores especificar quién puede acceder a los recursos del servidor.
